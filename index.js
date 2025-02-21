@@ -4,12 +4,21 @@ const cors = require("cors");
 const app = express();
 
 // CORS configuration
+const allowedOrigins = [
+    "https://bfhl-frontend-six-nu.vercel.app",
+    "http://localhost:5173"
+];
+
 const corsOptions = {
-    origin: process.env.NODE_ENV === 'production' 
-        ? 'your-production-domain.com' 
-        : 'http://localhost:5173', // Vite's default port
-    methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type', 'full-name', 'dob', 'email', 'roll-number']
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error("CORS not allowed"));
+        }
+    },
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type", "full-name", "dob", "email", "roll-number"]
 };
 
 app.use(cors(corsOptions));
@@ -65,10 +74,11 @@ app.post("/bfhl", (req, res) => {
         });
     }
 });
+
 app.get("/", (req, res) => {
     res.send("Welcome to API(route to /bfhl)");
-  });
-  
+});
+
 app.get("/bfhl", (req, res) => {
     res.status(200).json({
         operation_code: 1
